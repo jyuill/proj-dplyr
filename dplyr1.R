@@ -1,5 +1,7 @@
 # Based on YT video 'Hands-on Tutorial Dplyr Tutorial for Faster Data Manipulation in R'
 # https://www.youtube.com/watch?v=jWjqLW-u3hc 
+# as well as:
+# http://genomicsclass.github.io/book/pages/dplyr_tutorial.html 
 
 # 5 basic verbs:
 # filter
@@ -64,4 +66,5 @@ head(select(flight,Year:DepTime))
 # the more logical-flowing left-right
 flight %>% select(Year:DepTime) %>% head
 
-## ARRANGE
+## ARRANGE order of rows
+flight %>% arrange(FlightNum) %>% head
