@@ -2,14 +2,17 @@
 # https://www.youtube.com/watch?v=jWjqLW-u3hc 
 # as well as:
 # http://genomicsclass.github.io/book/pages/dplyr_tutorial.html 
+# other:
+# Hadley Wickham (1 of 2 - 50 min): https://www.youtube.com/watch?v=8SGif63VW6E 
+# Roger Peng: https://www.youtube.com/watch?v=aywFompr1F4 
 
-# 5 basic verbs:
-# filter
-# select
-# arrange
-# mutate
-# summarize
-# puls 'group by'
+# 5 basic verbs (lower case):
+# FILTER
+# SELECT
+# ARRANGE
+# MUTATE
+# SUMMARIZE
+# plus 'GROUP_BY' and 'RENAME'
 
 # load dplyr and data
 library(dplyr)
@@ -61,6 +64,11 @@ head(select(flight,starts_with("D")))
 head(select(flight,contains("Time")))
 # matches() - match regex
 # one_of() - names from a group of names (?)
+
+# RENAME: renames columns
+fcarrier <- rename(flight,carrier=UniqueCarrier)
+fcarrier <- rename(fcarrier,Yr=Year,Mth=Month,Mthd=DayofMonth,Weekday=DayOfWeek)
+names(fcarrier)
 
 ## Piping: %>%
 # allows to string functions from left to right for readability, rather than nested
