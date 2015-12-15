@@ -38,13 +38,16 @@ flight[flight$Month==1 & flight$DayofMonth==1,]
 filter(flight, Month==1, DayofMonth==1)
 # pipe for OR
 filter(flight, UniqueCarrier=="AA"|UniqueCarrier=="UA")
-<<<<<<< HEAD
+
 # find rows with na - looks like there are none
 filter(flight,is.na(FlightNum)) # use !is.na to exclude na rows
-=======
-# match? would love to know how to get partial match, such as 'N5...'
+
+# match 
 filter(flight, TailNum %in% c("N565AA","N576AA"))
 filter(flight, TailNum %in% "N565AA")
+# match - partial
+filter(flight,grepl("N5",TailNum))
+filter(flight,!grepl("N576",TailNum))
 # >=
 filter(flight, DepTime >=1400)
 filter(flight,is.na(ArrTime))
@@ -134,5 +137,5 @@ flight %>%
             totalairtime=sum(AirTime),
             totalcount=n())
 
->>>>>>> b91ad31d5454bece6653ce1ff9a2aca86f943fd7
+
 
