@@ -16,7 +16,9 @@
 
 # load dplyr and data
 library(dplyr)
-library(hflights)
+library(hflights) # requires hflights package
+# considered writing to csv to store with project, but 20MB!
+# write.csv(hflights,"hflight.csv")
 
 # explore data
 data("hflights")
