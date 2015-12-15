@@ -23,10 +23,13 @@ flight
 head(flight)
 
 #### dplyr
-## filter rows
+## FILTER rows
 # base r approach for filtering rows 
 flight[flight$Month==1 & flight$DayofMonth==1,]
 # dplyr filter - comma or ampersand for AND
 filter(flight, Month==1, DayofMonth==1)
 # pipe for OR
 filter(flight, UniqueCarrier=="AA"|UniqueCarrier=="UA")
+# find rows with na - looks like there are none
+filter(flight,is.na(FlightNum)) # use !is.na to exclude na rows
+
