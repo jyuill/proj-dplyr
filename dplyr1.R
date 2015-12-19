@@ -29,15 +29,27 @@ flight <- tbl_df(hflights)
 flight
 head(flight)
 summary(flight)
+# convert year, month, dayofmonth cols into single date
+flight$date <- as.Date(paste(flight$Year,flight$Month,flight$DayofMonth,sep="-"),format="%Y-%m-%d")
+str(flight)
 
-#### dplyr
+
+#### dplyr !!!!
 ## FILTER rows
 # base r approach for filtering rows 
 flight[flight$Month==1 & flight$DayofMonth==1,]
-# dplyr filter - comma or ampersand for AND
+# dplyr filter
+# a|b, a&b, a&!b
+# comma or ampersand for AND
 filter(flight, Month==1, DayofMonth==1)
+filter(flight,date>"2011-06-01",date<"2011-06-15")
 # pipe for OR
 filter(flight, UniqueCarrier=="AA"|UniqueCarrier=="UA")
+filter(flight,Dest %in% c("SFO","Oak"))
+# %in% for OR (exact match only)
+sfo_or_oak <- filter(flight,Dest %in% c("SFO","OAK"))
+# flights where arrival delay is more than twice the departure delay
+del <- filter(flight,ArrDelay > 2*DepDelay,DepDelay>0)
 
 # find rows with na - looks like there are none
 filter(flight,is.na(FlightNum)) # use !is.na to exclude na rows
@@ -57,6 +69,12 @@ filter(flight,!is.na(ArrTime))
 
 
 ## SELECT columns
+# , : c
+# starts_with(x, ignore.case=TRUE)
+# ends_with(x, ignore.case=TRUE)
+# contains(x, ignore.case=TRUE) 
+# matches(x,ignore.case=TRUE) match regex
+# num_range("x",1:5, width=2)
 fcols <- select(flight,UniqueCarrier,DepDelay,Cancelled,Diverted)
 fcols
 # unselect columns with -
@@ -71,7 +89,6 @@ head(select(flight,starts_with("D")))
 # ends_with() - end with chr string
 # contains() - contain chr string
 head(select(flight,contains("Time")))
-# matches() - match regex
 # one_of() - names from a group of names (?)
 
 # RENAME: renames columns
@@ -90,19 +107,26 @@ flight %>% select(Year:DepTime) %>% head
 flight %>% arrange(FlightNum) %>% head
 # piping together select cols then arrange (sort) on multiple rows, then filter, 
 # then show head
+# order flights by departure date, time, and flight number
 flight %>% 
   select(Year,Month,DayofMonth,DepTime,FlightNum) %>%
   arrange(FlightNum,DepTime) %>%
   filter(DepTime>1200) %>%
   head
-# as above but descend sort on Flightnum
+# as above but descend (desc) sort on Flightnum
 flight %>% 
   select(Year,Month,DayofMonth,DepTime,FlightNum) %>%
   arrange(desc(FlightNum),DepTime) %>%
   filter(DepTime>1200) %>%
   head
+# which were most delayed?
+arrange(flight,desc(ArrDelay)) %>% select(UniqueCarrier,FlightNum,ArrDelay,Dest,Distance) %>% head
+# which flights caught up the most?
+arrange(flight,desc(DepDelay-ArrDelay)) %>% select(date,DepDelay,ArrDelay)
 
-## MUTATE new cols
+
+## MUTATE new cols that are functions of existing variables
+
 # add col to calc flight time (not actually accurate due to 60 min in hr)
 flight %>%
   mutate(ftime=ArrTime-DepTime) %>%
@@ -127,7 +151,7 @@ flight %>%
             totalairtime=sum(AirTime),
             totalcount=n())
 
-## GROUP BY specified dimension (as in SQL)
+## GROUP BY specified dimension and SUMMARIZE on that dimension (as in SQL)
 flight %>%
   filter(!is.na(AirTime)) %>%
   group_by(UniqueCarrier) %>%
@@ -136,6 +160,8 @@ flight %>%
             minairtime=min(AirTime),
             totalairtime=sum(AirTime),
             totalcount=n())
+
+# SUMMARISE OPERATIONS
 
 
 
