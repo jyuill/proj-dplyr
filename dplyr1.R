@@ -34,7 +34,8 @@ flight$date <- as.Date(paste(flight$Year,flight$Month,flight$DayofMonth,sep="-")
 str(flight)
 
 
-#### dplyr !!!!
+###### dplyr !!!!#####
+
 ## FILTER rows
 # base r approach for filtering rows 
 flight[flight$Month==1 & flight$DayofMonth==1,]
@@ -95,8 +96,10 @@ head(select(flight,contains("Time")))
 fcarrier <- rename(flight,carrier=UniqueCarrier)
 fcarrier <- rename(fcarrier,Yr=Year,Mth=Month,Mthd=DayofMonth,Weekday=DayOfWeek)
 names(fcarrier)
+# can also rename directly within SELECT
+fcarrier2 <- select(flight,airline=UniqueCarrier, destination=Dest)
 
-## Piping: %>%...equivalent of 'then'
+## PIPING: %>%...equivalent of 'then'
 # allows to string functions from left to right for readability, rather than nested
 
 # instead of...
@@ -199,13 +202,14 @@ flight %>%
 
 planes <- flight %>%
   filter(!is.na(ArrDelay)) %>%
-  group_by(FlightNum) %>%
-  filter(n()>30)
+  group_by(TailNum) %>%
+  filter(n()>30) %>%
+  arrange(TailNum)
 
 planes %>%
   mutate(z_delay= (ArrDelay - mean(ArrDelay))/sd(ArrDelay)) %>%
   filter(z_delay >5) %>%
-  select(date,UniqueCarrier,FlightNum,ArrDelay,z_delay)
+  select(date,UniqueCarrier,TailNum,ArrDelay,z_delay)
 
 planes %>%
   filter(min_rank(ArrDelay) <5) # top four least delayed flights for each plane
@@ -227,6 +231,42 @@ daily <- flight %>%
 # maintains same number of rows as original number of observations
 # first item defaults to 'NA' but can be set or '0' or whatever (somehow - check help)
 daily %>% mutate(delay-lag(delay))
+# use order_by to ensure lag calculated properly even if rows not sorted by how you want to calc lag
+daily %>% mutate(dlag=delay-lag(delay, order_by=date))
+
+## TWO-TABLE VERBS - typically not just one table for analysis
+# get list and count of airports (destinations) - just exercise - real data below with long/lat
+arprt <- flight %>% select(Dest) %>% group_by(Dest) %>% summarise(total=n())
+# list only
+arprt2 <- flight %>% select(Dest) %>% group_by(Dest) %>% summarise()
+
+# more complete list, with longitude and latitude
+library(nycflights13) # contains data for airlines, airports, flights, planes, weather
+str(airports)
 
 
-  
+location <- airports %>% select(Dest=faa, airport=name,lat,lon)
+
+# which destinations have the highest average delays?
+delays <- flight %>% 
+  group_by(Dest) %>%
+  summarise(ArrDelay=mean(ArrDelay,na.rm=TRUE), n=n()) %>%
+  arrange(desc(ArrDelay))
+
+# same as above but with lat/lon from other table
+delays <- flight %>% 
+  group_by(Dest) %>%
+  summarise(ArrDelay=mean(ArrDelay,na.rm=TRUE), n=n()) %>%
+  arrange(desc(ArrDelay)) %>%
+  left_join(location) # join to location data on 'Dest' -> automatically identifies join variable
+View(delays)
+
+# plot on map - easy! :)
+library(ggplot2)
+library(maps)
+ggplot(delays,aes(lon,lat)) +
+  borders("state") +
+  geom_point(aes(colour=ArrDelay),size=5,alpha=0.9)+
+  scale_colour_gradient2() +
+  coord_quickmap()
+
