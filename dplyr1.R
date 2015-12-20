@@ -96,8 +96,9 @@ fcarrier <- rename(flight,carrier=UniqueCarrier)
 fcarrier <- rename(fcarrier,Yr=Year,Mth=Month,Mthd=DayofMonth,Weekday=DayOfWeek)
 names(fcarrier)
 
-## Piping: %>%
+## Piping: %>%...equivalent of 'then'
 # allows to string functions from left to right for readability, rather than nested
+
 # instead of...
 head(select(flight,Year:DepTime))
 # the more logical-flowing left-right
@@ -136,9 +137,30 @@ flight %>%
 flight %>%
   mutate(ftime=ArrTime-DepTime, speed=Distance/(AirTime/60)) %>%
   select(FlightNum,DepTime,ArrTime,ftime,AirTime,Distance,speed)
-head
+  head
+# some little trick to break out larger number into smaller components 
+mutate(flightspeed, hour = DepTime %/% 100, min = DepTime %% 100) %>% select(date,DepTime,hour,min)
 
 ## SUMMARISE to create summaries for a given col
+# min(x), median(x), max(x), quantile(x,p)
+# n(x), n_distinct(x), sum(x), mean(x)
+# sum(x >10), mean(x>10)
+# sd(x2 var(x), iqr(x), mad(x)
+
+# first use group_by
+by_date <- group_by(flight,date)
+head(by_date)
+# summarize by various stats, filtering each one for no na
+summarise(filter(by_date),
+          med=median(DepDelay, na.rm=TRUE),
+          max=max(DepDelay, na.rm=TRUE),
+          q90=quantile(DepDelay,0.9, na.rm=TRUE))
+# same idea as above but filtering variable for na upfront
+summarise(filter(by_date,!is.na(DepDelay)),
+          med=median(DepDelay),
+          mean=mean(DepDelay),
+          m15=mean(DepDelay>15)) # mean for departure delays more than 15 min (?)
+
 # get the mean for AirTime, removing NA first
 flight %>%
   filter(!is.na(AirTime)) %>%
@@ -161,7 +183,18 @@ flight %>%
             totalairtime=sum(AirTime),
             totalcount=n())
 
-# SUMMARISE OPERATIONS
+# which destinations have highest average delays?
+late_destinations <- flight %>% 
+  filter(!is.na(ArrDelay)) %>% # remove na
+  group_by(Dest) %>% # group by destination
+  summarise(med=median(ArrDelay),mean = mean(ArrDelay), q80=quantile(ArrDelay,0.8),n=n()) %>% # summarize desired variables
+  filter(n>100) %>% # exclude those destinations with less than 100 flights in the dataset
+  arrange(desc(mean)) # show data in descending order  of average arrival delay
 
+# which flights fly every day?
+flight %>%
+  group_by(UniqueCarrier, FlightNum) %>% # group by airline, flight number
+  summarise(n=n_distinct(date)) %>% # count number of distinct dates for each item in the group
+  filter(n==365) # filter for those with 365 distinct dates (1 per day of year)
 
 
