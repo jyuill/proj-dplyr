@@ -197,4 +197,36 @@ flight %>%
   summarise(n=n_distinct(date)) %>% # count number of distinct dates for each item in the group
   filter(n==365) # filter for those with 365 distinct dates (1 per day of year)
 
+planes <- flight %>%
+  filter(!is.na(ArrDelay)) %>%
+  group_by(FlightNum) %>%
+  filter(n()>30)
 
+planes %>%
+  mutate(z_delay= (ArrDelay - mean(ArrDelay))/sd(ArrDelay)) %>%
+  filter(z_delay >5) %>%
+  select(date,UniqueCarrier,FlightNum,ArrDelay,z_delay)
+
+planes %>%
+  filter(min_rank(ArrDelay) <5) # top four least delayed flights for each plane
+
+# Window functions
+# aggregate: n inputs > 1 output
+# Window: n inputs > n outputs
+#   ranking functions - deal with ties differently
+min_rank(c(1,1,2,3)) # ranks as 1,1,3,4
+dense_rank(c(1,1,2,3)) # ranks as 1,1,2,3
+row_number(c(1,1,2,3)) # ranks as 1,2,3,4
+
+# lead and lag -> comparing differences from one row to other
+daily <- flight %>%
+  group_by(date) %>%
+  summarise(delay=mean(ArrDelay, na.rm=TRUE))
+
+# calc difference between one observation and teh previous
+# maintains same number of rows as original number of observations
+# first item defaults to 'NA' but can be set or '0' or whatever (somehow - check help)
+daily %>% mutate(delay-lag(delay))
+
+
+  
