@@ -5,6 +5,8 @@
 # other:
 # Hadley Wickham (1 of 2 - 50 min): https://www.youtube.com/watch?v=8SGif63VW6E 
 # Roger Peng: https://www.youtube.com/watch?v=aywFompr1F4 
+# also:
+browseVignettes(package="dplyr") 
 
 # 5 basic verbs (lower case):
 # FILTER
@@ -234,7 +236,7 @@ daily %>% mutate(delay-lag(delay))
 # use order_by to ensure lag calculated properly even if rows not sorted by how you want to calc lag
 daily %>% mutate(dlag=delay-lag(delay, order_by=date))
 
-## TWO-TABLE VERBS - typically not just one table for analysis
+## JOINS - TWO-TABLE VERBS - typically not just one table for analysis
 # get list and count of airports (destinations) - just exercise - real data below with long/lat
 arprt <- flight %>% select(Dest) %>% group_by(Dest) %>% summarise(total=n())
 # list only
@@ -243,7 +245,7 @@ arprt2 <- flight %>% select(Dest) %>% group_by(Dest) %>% summarise()
 # more complete list, with longitude and latitude
 library(nycflights13) # contains data for airlines, airports, flights, planes, weather
 str(airports)
-
+head(weather)
 
 location <- airports %>% select(Dest=faa, airport=name,lat,lon)
 
@@ -270,3 +272,64 @@ ggplot(delays,aes(lon,lat)) +
   scale_colour_gradient2() +
   coord_quickmap()
 
+instrument <- data.frame(name=c("John","Paul","George","Ringo","Stuart","Pete"),
+                         instrument=c("guitar","bass","guitar","drums","bass","drums"))
+band <- data.frame(name=c("John","Paul","George","Ringo","Reg","Eric"),
+                   band=c("TRUE","TRUE","TRUE","TRUE","FALSE","FALSE"))
+
+inner_join(instrument,band) # 'natural' join -> all items in both tables
+left_join(instrument,band) # all items in left table with missing values when no matching data in othe
+semi_join(instrument,band) # gets rows in left that match rows in right
+anti_join(instrument,band) # gets rows in left that don't match rows in right
+
+## JOIN delay data to weather data
+# add hour variable
+flight <- flight %>% mutate(hour = DepTime %/% 100) # use trick from line 145 above to get hour variable
+
+# delays in departure by date and hour
+hourly_delay <- flight %>%
+  group_by(date,hour) %>%
+  filter(!is.na(DepDelay)) %>%
+  summarise(delay = mean(DepDelay), n=n()) %>%
+  filter(n>10)
+View(hourly_delay)
+
+# check weather data in nycflights13 for date and hour variable
+head(weather)
+# add date variable as done early for flight data on line 33 (new dataframbe just to stay clean)
+w2 <- weather
+w2 <- mutate(w2,year2=year-2) # have to shift year data to 2011 to match flight data
+w2$date <- as.Date(paste(w2$year2,w2$month,w2$day,sep="-"),format="%Y-%m-%d")
+head(w2)
+summary(w2)
+# need to have unique rows for each date/hr - there may be multiple weather locations in weather data
+w2 %>% group_by(origin) %>% summarize(total=n())
+# filter for predominant location (for purposes of exercise)
+wEWR <- w2 %>% filter(origin=="EWR")
+
+# join date and hour delay data with weather for that date and hour
+delay_weather <- hourly_delay %>% left_join(wEWR)
+
+# explore data to see if weather accounts for delays (demo: won't really work because:
+# houston flight data and nyc weather data)
+qplot(temp,delay,data=delay_weather)
+qplot(wind_speed,delay,data=delay_weather)
+qplot(visib,delay,data=delay_weather)
+qplot(wind_gust,delay,data=delay_weather)
+
+## DO
+# general purpose verb - slow but applies widely
+
+## DATABASES
+# also works with db datasources
+# MySQL, BigQuery
+# SQLite - comes with R
+# dplyr translates the R commands into SQL
+# SQL learning:
+# - Learn how to use SELECT
+#   - tech.pro/tutorial/1555/10-easy-steps-to-a-complete-understanding-of-sql (nat available)
+#   - [alt] http://blog.csdn.net/dgly1611/article/details/18355593 
+# - Learn Indices: www.sqlite.org/queryplanner.html
+
+## LEARN MORE DPLYR
+browseVignettes(package="dplyr")
