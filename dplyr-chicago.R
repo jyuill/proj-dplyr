@@ -7,8 +7,10 @@ str(chicago)
 summary(chicago)
 head(chicago)
 
+qplot(date,tmpd,data=chicago)
+
 # some things to do with dplyr:
 # separate date out to year and month and maybe day
-# group_by month and summarize 
+# group_by month and summarize based on mean
 # convert temps from fahrenheit to celsius (mutate)
 # change column names to be more readable
