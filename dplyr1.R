@@ -1,5 +1,6 @@
 # Based on YT video 'Hands-on Tutorial Dplyr Tutorial for Faster Data Manipulation in R'
 # https://www.youtube.com/watch?v=jWjqLW-u3hc 
+# documentation in dplyr-tutorial.pdf file in this project
 # as well as:
 # http://genomicsclass.github.io/book/pages/dplyr_tutorial.html 
 # other:
