@@ -5,19 +5,29 @@ date: "December 27, 2015"
 output: html_document
 ---
 
-Charts showing monthly average, minimum, and maximum temperatures in Chicago.
+Charts showing monthly temperatures for Chicago, in **Celsius** based on:
 
-Data setup
+* monthly average
+* minimum temperature recorded for each month
+* maximum temperature recorderd for each month.
 
-```{r}
-chicagomthlytemp <- read.csv("chicagomthlytemp.csv")
+```{r, echo=FALSE}
 library(ggplot2)
-# summary(chicagomthlytemp)
 
 ```
 
-Average Monthly Temperature
+
+### Data setup
+Data from:
+[Links!](https://github.com/DataScienceSpecialization/courses/tree/master/03_GettingData/dplyr)
+
 ```{r}
+chicagomthlytemp <- read.csv("chicagomthlytemp.csv")
+
+```
+
+### Average Monthly Temperature
+```{r, echo=FALSE}
 ggplot(data=chicagomthlytemp,aes(x=month,y=avetempc)) + geom_bar(stat="identity") + 
   theme_bw(base_size=16) +
   scale_x_discrete(breaks=c(seq(1,12,1))) +
@@ -27,8 +37,8 @@ ggplot(data=chicagomthlytemp,aes(x=month,y=avetempc)) + geom_bar(stat="identity"
 ```
 
 
-Minimum Monthly Temperature
-```{r}
+### Minimum Monthly Temperature
+```{r, echo=FALSE}
 ggplot(data=chicagomthlytemp,aes(x=month,y=mintempc)) + geom_bar(stat="identity") + 
   theme_bw(base_size=16) +
   scale_x_discrete(breaks=c(seq(1,12,2))) +
@@ -39,8 +49,8 @@ ggplot(data=chicagomthlytemp,aes(x=month,y=mintempc)) + geom_bar(stat="identity"
 ```
 
 
-Maximum Monthly Temperature
-```{r}
+### Maximum Monthly Temperature
+```{r, echo=FALSE}
 
 ggplot(data=chicagomthlytemp,aes(x=month,y=maxtempc)) + geom_bar(stat="identity") + 
   theme_bw(base_size=16) +
