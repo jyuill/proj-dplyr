@@ -42,3 +42,5 @@ chicagomth <- group_by(chitempc, month) %>%
 qplot(month,avetempc,data=chicagomth, geom="line", group=1) + theme_bw(base_size=16)
 ggplot(data=chicagomth,aes(x=month,y=avetempc, group=1)) + geom_line()
 ggplot(data=chicagomth,aes(x=month,y=avetempc)) + geom_bar(stat="identity") + theme_bw(base_size=16)
+# taking a look at min temps...
+ggplot(data=chicagomth,aes(x=month,y=mintempc)) + geom_bar(stat="identity") + theme_bw(base_size=16)
