@@ -171,6 +171,7 @@ summarise(filter(by_date,!is.na(DepDelay)),
 flight %>%
   filter(!is.na(AirTime)) %>%
   summarise(avgairtime=mean(AirTime))
+# can summarize on multiple variables using different functions
 flight %>%
   filter(!is.na(AirTime)) %>%
   summarise(avgairtime=mean(AirTime),
