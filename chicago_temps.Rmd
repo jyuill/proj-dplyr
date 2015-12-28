@@ -19,7 +19,7 @@ library(ggplot2)
 
 ### Data setup
 Data from:
-[Links!](https://github.com/DataScienceSpecialization/courses/tree/master/03_GettingData/dplyr)
+[Roger Peng's Github repository for online Data Science courses](https://github.com/DataScienceSpecialization/courses/tree/master/03_GettingData/dplyr)
 
 ```{r}
 chicagomthlytemp <- read.csv("chicagomthlytemp.csv")
