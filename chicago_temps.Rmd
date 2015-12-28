@@ -1,0 +1,53 @@
+---
+title: "Chicage Temperatures"
+author: "John Yuill"
+date: "December 27, 2015"
+output: html_document
+---
+
+Charts showing monthly average, minimum, and maximum temperatures in Chicago.
+
+Data setup
+
+```{r}
+chicagomthlytemp <- read.csv("chicagomthlytemp.csv")
+library(ggplot2)
+# summary(chicagomthlytemp)
+
+```
+
+Average Monthly Temperature
+```{r}
+ggplot(data=chicagomthlytemp,aes(x=month,y=avetempc)) + geom_bar(stat="identity") + 
+  theme_bw(base_size=16) +
+  scale_x_discrete(breaks=c(seq(1,12,1))) +
+  xlab("Month of Year") +
+  ylab("Ave Temp for Month")
+
+```
+
+
+Minimum Monthly Temperature
+```{r}
+ggplot(data=chicagomthlytemp,aes(x=month,y=mintempc)) + geom_bar(stat="identity") + 
+  theme_bw(base_size=16) +
+  scale_x_discrete(breaks=c(seq(1,12,2))) +
+  xlab("Month of Year") +
+  ylab("Minimum Temp for Month")
+
+
+```
+
+
+Maximum Monthly Temperature
+```{r}
+
+ggplot(data=chicagomthlytemp,aes(x=month,y=maxtempc)) + geom_bar(stat="identity") + 
+  theme_bw(base_size=16) +
+  scale_x_discrete(breaks=c(seq(1,12,2))) +
+  xlab("Month of Year") +
+  ylab("Maximum Temp for Month")
+
+```
+
+

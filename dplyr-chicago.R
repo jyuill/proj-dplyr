@@ -38,9 +38,14 @@ chicagomth <- group_by(chitempc, month) %>%
   summarize(avetempc=mean(tempc),
             mintempc=min(tempc),
             maxtempc=max(tempc))
+write.csv(chicagomth,"chicagomthlytemp.csv")
 # various ggplots showing ave mthly temp - bar works best
 qplot(month,avetempc,data=chicagomth, geom="line", group=1) + theme_bw(base_size=16)
 ggplot(data=chicagomth,aes(x=month,y=avetempc, group=1)) + geom_line()
-ggplot(data=chicagomth,aes(x=month,y=avetempc)) + geom_bar(stat="identity") + theme_bw(base_size=16)
+ggplot(data=chicagomth,aes(x=month,y=avetempc),group=1) + geom_bar(stat="identity") + theme_bw(base_size=16)
 # taking a look at min temps...
-ggplot(data=chicagomth,aes(x=month,y=mintempc)) + geom_bar(stat="identity") + theme_bw(base_size=16)
+ggplot(data=chicagomth,aes(x=month,y=mintempc)) + geom_bar(stat="identity") + 
+  theme_bw(base_size=16) +
+  xlab("Month of the Year") +
+  ylab("Lowest Temperate for the Month") +
+  scale_x_discrete(breaks=c(seq(1,12,2)))
