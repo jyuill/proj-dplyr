@@ -29,36 +29,29 @@ qplot(month,tmpd,data=chitemp,geom="boxplot")
 
 # convert fahrenheit to celsius = 5/9(f-32)
 chitempc <- chitemp %>% mutate(tempc=5/9*(tmpd-32))
-write.csv(chitempc,"chicagotempcelsius.csv", row.names = FALSE)
+write.csv(chitempc,"chicagotempcelsius.csv", row.names = FALSE) # to avoid carrying over auto row names
 # boxplot by month -> celsius
+# black and white theme
 qplot(month,tempc,data=chitempc,geom="boxplot")+theme_bw(base_size = 16) +
   xlab("Month of Year") +
   ylab("Temperature Range During Month") +
   geom_hline(yintercept=0, linetype=2) +
   scale_y_continuous(limits=c(-30,35),breaks=seq(-30,30,10)) +
   scale_x_discrete(breaks=seq(1,12,1))
+# classic theme - no gridlines
 qplot(month,tempc,data=chitempc,geom="boxplot")+ theme_classic(base_size=16) +
   xlab("Month of Year") +
   ylab("Temperature Range During Month") +
   geom_hline(yintercept=0, linetype=2) +
   scale_y_continuous(limits=c(-30,35),breaks=seq(-30,30,10)) +
   scale_x_discrete(breaks=seq(1,12,1))
+# grey theme - appears to be default
 qplot(month,tempc,data=chitempc,geom="boxplot")+ theme_grey(base_size=16) +
   xlab("Month of Year") +
   ylab("Temperature Range During Month") +
   geom_hline(yintercept=0, linetype=2) +
   scale_y_continuous(limits=c(-30,35),breaks=seq(-30,30,10)) +
   scale_x_discrete(breaks=seq(1,12,1))
-
-qplot(month,tempc,data=chicagotempcelsius,geom="boxplot")+ theme_classic(base_size=16) +
-  xlab("Month of Year") +
-  ylab("Temperature Range During Month") +
-  geom_hline(yintercept=0, linetype=2) +
-  scale_y_continuous(limits=c(-30,35),breaks=seq(-30,30,10)) +
-  scale_x_discrete(breaks=seq(1,12,1))
-
-str(chicagotempcelsius)
-chicagotempcelsius$month <- as.factor(chicagotempcelsius$month)
 
 # daily line chart for all tempc data
 qplot(date,tempc,data=chitempc,geom = "line")
