@@ -26,10 +26,40 @@ chicagomy$month <- as.factor(chicagomy$month) # convert month from numeric to fa
 chitemp <- select(chicagomy,tmpd,date,month,year) %>% filter(!is.na(tmpd))
 # boxplot for monthly temprature range (fahrenheit)
 qplot(month,tmpd,data=chitemp,geom="boxplot")
+
 # convert fahrenheit to celsius = 5/9(f-32)
 chitempc <- chitemp %>% mutate(tempc=5/9*(tmpd-32))
+write.csv(chitempc,"chicagotempcelsius.csv", row.names = FALSE)
 # boxplot by month -> celsius
-qplot(month,tempc,data=chitempc,geom="boxplot")+theme_bw(base_size = 16)
+qplot(month,tempc,data=chitempc,geom="boxplot")+theme_bw(base_size = 16) +
+  xlab("Month of Year") +
+  ylab("Temperature Range During Month") +
+  geom_hline(yintercept=0, linetype=2) +
+  scale_y_continuous(limits=c(-30,35),breaks=seq(-30,30,10)) +
+  scale_x_discrete(breaks=seq(1,12,1))
+qplot(month,tempc,data=chitempc,geom="boxplot")+ theme_classic(base_size=16) +
+  xlab("Month of Year") +
+  ylab("Temperature Range During Month") +
+  geom_hline(yintercept=0, linetype=2) +
+  scale_y_continuous(limits=c(-30,35),breaks=seq(-30,30,10)) +
+  scale_x_discrete(breaks=seq(1,12,1))
+qplot(month,tempc,data=chitempc,geom="boxplot")+ theme_grey(base_size=16) +
+  xlab("Month of Year") +
+  ylab("Temperature Range During Month") +
+  geom_hline(yintercept=0, linetype=2) +
+  scale_y_continuous(limits=c(-30,35),breaks=seq(-30,30,10)) +
+  scale_x_discrete(breaks=seq(1,12,1))
+
+qplot(month,tempc,data=chicagotempcelsius,geom="boxplot")+ theme_classic(base_size=16) +
+  xlab("Month of Year") +
+  ylab("Temperature Range During Month") +
+  geom_hline(yintercept=0, linetype=2) +
+  scale_y_continuous(limits=c(-30,35),breaks=seq(-30,30,10)) +
+  scale_x_discrete(breaks=seq(1,12,1))
+
+str(chicagotempcelsius)
+chicagotempcelsius$month <- as.factor(chicagotempcelsius$month)
+
 # daily line chart for all tempc data
 qplot(date,tempc,data=chitempc,geom = "line")
 
@@ -45,7 +75,7 @@ ggplot(data=chicagomth,aes(x=month,y=avetempc, group=1)) + geom_line()
 ggplot(data=chicagomth,aes(x=month,y=avetempc),group=1) + geom_bar(stat="identity") + theme_bw(base_size=16)
 # taking a look at min temps...
 ggplot(data=chicagomth,aes(x=month,y=mintempc)) + geom_bar(stat="identity") + 
-  theme_bw(base_size=16) +
+  theme_classic(base_size=16) +
   xlab("Month of the Year") +
   ylab("Lowest Temperate for the Month") +
-  scale_x_discrete(breaks=c(seq(1,12,2)))
+  scale_x_discrete(breaks=seq(1,12,1))
