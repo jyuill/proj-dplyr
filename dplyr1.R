@@ -231,7 +231,7 @@ daily <- flight %>%
   group_by(date) %>%
   summarise(delay=mean(ArrDelay, na.rm=TRUE))
 
-# calc difference between one observation and teh previous
+# calc difference between one observation and the previous
 # maintains same number of rows as original number of observations
 # first item defaults to 'NA' but can be set or '0' or whatever (somehow - check help)
 daily %>% mutate(delay-lag(delay))
